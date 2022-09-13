@@ -44,3 +44,9 @@ variable "datacenter" {
 	default = ""
 	sensitive = false
 }
+
+variable "folder" {
+    type = string
+    default = ""
+    sensitive = false
+}

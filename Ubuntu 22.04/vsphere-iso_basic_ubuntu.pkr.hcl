@@ -35,7 +35,7 @@ source "vsphere-iso" "template-ubuntu2204" {
   }
 
   // SSH
-  ssh_timeout             = "10m"
+  ssh_timeout             = "20m"
   ssh_clear_authorized_keys = true
   ssh_username            = "vmadmin"
   ssh_password            = "$6$Da/Bin6we2OOJCVD$HM00JdEP47D.cVfSYzwf71khVHPD8NqbYLGw/iXPswndEqI2TNsMELWRCt0tA2.mVMPjFZlPI0B/xOBO9OhF01"
