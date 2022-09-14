@@ -18,17 +18,21 @@ autoinstall:
         uri: http://ports.ubuntu.com/ubuntu-ports
   early-commands:
     - sudo systemctl stop ssh
-  locale: en_US
+  locale: ${vm_guest_os_language}
   keyboard:
-    layout: us
+    layout: ${vm_guest_os_keyboard}
   users: 
+    - default
     - name: shire
+      gecos: John Aleshire
+      groups: users, admin
+      lock_password: false
       ssh-import-id: gh:jcaleshire
       shell: /bin/bash
   identity:
-    hostname: ubuntu-template
-    username: vmadmin
-    password: $6$Da/Bin6we2OOJCVD$HM00JdEP47D.cVfSYzwf71khVHPD8NqbYLGw/iXPswndEqI2TNsMELWRCt0tA2.mVMPjFZlPI0B/xOBO9OhF01
+    hostname: ubuntu-server
+    username: ${build_username}
+    password: ${build_password_encrypted}
   ssh:
     install-server: true
     allow-pw: true
@@ -36,12 +40,11 @@ autoinstall:
     - openssh-server
     - open-vm-tools
     - cloud-init
-    - whois
-    - zsh
-    - wget
-    - tasksel
     - docker
   user-data:
     disable_root: false
-    timezone: UTC
+    timezone: ${vm_guest_os_timezone}
   late-commands:
+    - sed -i -e 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/g' /target/etc/ssh/sshd_config
+    - echo '${build_username} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/${build_username}
+    - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/${build_username}
