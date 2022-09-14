@@ -30,9 +30,10 @@ source "vsphere-iso" "template-ubuntu2204" {
   password                = var.vsphere_password
   datacenter              = var.vsphere_datacenter
   cluster                 = var.vsphere_cluster
-  network                 = var.vsphere_network
   insecure_connection     = true
   folder                  = var.vsphere_folder
+  host                    = var.vsphere_host
+  resource_pool           = var.vsphere_resource
 
   // Template Settings
   create_snapshot         = true
