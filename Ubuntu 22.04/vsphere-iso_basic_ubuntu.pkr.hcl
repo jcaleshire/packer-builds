@@ -26,7 +26,7 @@ locals {
 source "vsphere-iso" "template-ubuntu2204" {
   // vSphere
   vcenter_server          = var.vsphere_server
-  username                = var.vsphere_user
+  username                = var.vsphere_username
   password                = var.vsphere_password
   datacenter              = var.datacenter
   cluster                 = var.vsphere_cluster
