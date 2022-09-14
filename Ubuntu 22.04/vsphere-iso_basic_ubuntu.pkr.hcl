@@ -29,6 +29,7 @@ source "vsphere-iso" "template-ubuntu2204" {
   username                = var.vsphere_username
   password                = var.vsphere_password
   datacenter              = var.vsphere_datacenter
+  datastore               = var.vsphere_datastore
   cluster                 = var.vsphere_cluster
   insecure_connection     = true
   folder                  = var.vsphere_folder
