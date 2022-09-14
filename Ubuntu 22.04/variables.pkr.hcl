@@ -48,6 +48,18 @@ variable "vsphere_cluster" {
   description = "The name of the target vSphere cluster. (e.g. 'sfo-w01-cl01')"
 }
 
+variable "vsphere_host" {
+  type        = string
+  description = "The hostname that the VM will be built on. Either vsphere_host or vsphere_resource must be defined for the build to complete."
+  default     = ""
+}
+
+variable "vsphere_resource" {
+  type        = string
+  description = "The resource pool that the VM will be built on. Either vsphere_host or vsphere_resource must be defined for the build to complete."
+  default     = ""
+}
+
 variable "vsphere_datastore" {
   type        = string
   description = "The name of the target vSphere datastore. (e.g. 'sfo-w01-cl01-vsan01')"
