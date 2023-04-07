@@ -259,11 +259,6 @@ variable "common_iso_datastore" {
   description = "The name of the source vSphere datastore for ISO images. (e.g. 'sfo-w01-cl01-nfs01')"
 }
 
-variable "iso_url" {
-  type        = string
-  description = "The URL source of the ISO image. (e.g. 'https://artifactory.rainpole.io/.../os.iso')"
-}
-
 variable "iso_path" {
   type        = string
   description = "The path on the source vSphere datastore for ISO image. (e.g. 'iso/linux/ubuntu')"
@@ -398,20 +393,6 @@ variable "communicator_port" {
 variable "communicator_timeout" {
   type        = string
   description = "The timeout for the communicator protocol."
-}
-
-// Ansible Credentials
-
-variable "ansible_username" {
-  type        = string
-  description = "The username for Ansible to login to the guest operating system. (e.g. 'ansible')"
-  sensitive   = true
-}
-
-variable "ansible_key" {
-  type        = string
-  description = "The public key for Ansible to login to the guest operating system."
-  sensitive   = true
 }
 
 // HCP Packer Settings

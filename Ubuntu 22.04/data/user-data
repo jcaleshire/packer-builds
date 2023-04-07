@@ -1,50 +1,89 @@
 #cloud-config
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-# WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-# OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 # Ubuntu Server 22.04 LTS
-autoinstall:
-  version: 1
-  apt:
-    geoip: true
-    disable_components: []
-    preserve_sources_list: false
-    primary:
-      - arches: [amd64, i386]
-        uri: http://us.archive.ubuntu.com/ubuntu
-      - arches: [default]
-        uri: http://ports.ubuntu.com/ubuntu-ports
-  early-commands:
-    - sudo systemctl stop ssh
-  locale: ${vm_guest_os_language}
-  keyboard:
-    layout: ${vm_guest_os_keyboard}
-  users: 
-    - default
-    - name: shire
-      gecos: John Aleshire
-      groups: users, admin
-      lock_password: false
-      ssh-import-id: gh:jcaleshire
-      shell: /bin/bash
-  identity:
-    hostname: ubuntu-server
-    username: ${build_username}
-    password: ${build_password_encrypted}
-  ssh:
-    install-server: true
-    allow-pw: true
-  packages:
-    - openssh-server
-    - open-vm-tools
-    - cloud-init
-    - docker
-  user-data:
-    disable_root: false
-    timezone: ${vm_guest_os_timezone}
-  late-commands:
-    - sed -i -e 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/g' /target/etc/ssh/sshd_config
-    - echo '${build_username} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/${build_username}
-    - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/${build_username}
+ca_certs:
+  remove_defaults: false
+  trusted:
+  - |
+    -----BEGIN CERTIFICATE-----
+    MIIDaTCCAlGgAwIBAgIUUTaLQkarE7AAtTR8wGE+TAM4oX4wDQYJKoZIhvcNAQEL
+    BQAwIDEeMBwGA1UEAwwVczEtaW5jYTAxLnNoaXJlLndvcmtzMB4XDTIyMTAzMTAz
+    NTQ0MFoXDTMyMTAyODAzNTQ0MFowIDEeMBwGA1UEAwwVczEtaW5jYTAxLnNoaXJl
+    LndvcmtzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq5tVMFL0Iz1D
+    GepT2q8JbWcgCtiQRh84wXDDHSH0WKQvgZMnyIUMDPYQ4QHVH4SqphFcTv7M1kLr
+    3W9ABI8vVqOb+dhSlcFTOQPgQGoV0RS9hV1/IuM6YaEzM8rmkaErMjXeyCILXhBi
+    B//2pe1Hfd8/7qy2O6Ooaiki/KpuvdXRUuYUAcpOt1Dg2LpSaoBFdNJF+g3rlgsX
+    PlFcQe0NKVPMg6+6SUqfpWPcQzz3wX1j3oVwxGeD5bFmETrlz7r6ZD7TAe+QrZE2
+    IGMgELcTTq1+ZYa7VCqXywTFDp4uMqx2Vj2tWhcH7GzZM3EHZGBUpc6wa+QRJ4z+
+    rnliMErVHwIDAQABo4GaMIGXMB0GA1UdDgQWBBTXnvAEIL4DDlcNyahEGyQZnVrg
+    yTBbBgNVHSMEVDBSgBTXnvAEIL4DDlcNyahEGyQZnVrgyaEkpCIwIDEeMBwGA1UE
+    AwwVczEtaW5jYTAxLnNoaXJlLndvcmtzghRRNotCRqsTsAC1NHzAYT5MAzihfjAM
+    BgNVHRMEBTADAQH/MAsGA1UdDwQEAwIBBjANBgkqhkiG9w0BAQsFAAOCAQEAByGv
+    2KfDK4ZL3kDIlhMnLaUROOGW5MRQ6xRTwQsMDePq13CvPUnm4M3/w+sjDRE1cPZX
+    /nW1t6CaJe4qChTIOh9x74r7hT6Cln3SSCxuSDpPohUifzRUb/96j951B0vYiCpP
+    ALN4o5df4GrVI5+XlC6h3by4ZnydIScnvH8vRFocyo6zun0gAC3OzJ0i8Be+LerD
+    KG+UzNK74WwYpKQCeiO/xzD4WMy6sldAtpfsJ57fJ7iJCl3rkyTg2GHiygC17uqJ
+    Es7oQ9s+LfFMOEXyf7hR0qOj0HeNje/Aii8oW8WlLdb3YdAJQe5/Znwy++c5Ye+F
+    H0j4RHvRH2nlKerI2g==
+    -----END CERTIFICATE-----
+
+
+apt:
+  geoip: true
+  disable_components: []
+  preserve_sources_list: false
+  primary:
+    - arches: [amd64, i386]
+      uri: http://us.archive.ubuntu.com/ubuntu
+    - arches: [default]
+      uri: http://ports.ubuntu.com/ubuntu-ports
+early-commands:
+  - sudo systemctl stop ssh
+locale: ${vm_guest_os_language}
+keyboard:
+  layout: ${vm_guest_os_keyboard}
+identity:
+  hostname: ${vm_guest_hostname}
+ssh:
+  emit_keys_to_console: false
+  install-server: true
+  allow-pw: true
+packages:
+  - openssh-server
+  - open-vm-tools
+  - cloud-init
+  - realmd
+  - libnss-sss
+  - libpam-sss
+  - sssd
+  - sssd-tools
+  - adcli
+  - samba-common-bin
+  - oddjob 
+  - oddjob-mkhomedir
+  - packagekit
+package_update: true
+package_upgrade: true
+user-data:
+  disable_root: false
+  timezone: ${vm_guest_os_timezone}
+users:
+  - name: ${build_username}
+    passwd: ${build_password_encrypted}
+    lock_passwd: false
+    groups: sudo
+  - name: shire
+    gecos: John Aleshire
+    passwd: $6$rounds=4096$ctanJUX6n$1zbs41wkH6O7DPhI6MJNkVqK/UiyHweMgxztv6WpJvocBGOZ3BWqy6isUEvdCqJP2bgRVzbRJYFMc.9lDGVoE1
+    lock_passwd: true
+    groups: sudo
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_import_id:
+      - gh:jcaleshire
+late-commands:
+  - echo '${build_username} ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/${build_username}
+  - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/${build_username}
+final_message: |
+  Cloud-init has finished running.
+  Time: $timestamp
+  Source: $datasource

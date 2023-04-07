@@ -1,7 +1,7 @@
 locals {
   build_by          = "Built by: HashiCorp Packer ${packer.version}"
   build_date        = formatdate("YYYY-MM-DD hh:mm ZZZ", timestamp())
-  build_version     = formatdate("YY.MM", timestamp())
+  build_version     = formatdate("YYMM", timestamp())
   build_description = "Version: v${local.build_version}\nBuilt on: ${local.build_date}\n${local.build_by}"
   iso_paths         = ["[${var.common_iso_datastore}] ${var.iso_path}/${var.iso_file}"]
   iso_checksum      = "${var.iso_checksum_type}:${var.iso_checksum_value}"
@@ -14,12 +14,15 @@ locals {
       build_username           = var.build_username
       build_password           = var.build_password
       build_password_encrypted = var.build_password_encrypted
+      build_time               = local.manifest_date
+      vm_guest_hostname        = local.vm_hostname
       vm_guest_os_language     = var.vm_guest_os_language
       vm_guest_os_keyboard     = var.vm_guest_os_keyboard
       vm_guest_os_timezone     = var.vm_guest_os_timezone
     })
   }
   data_source_command = var.common_data_source == "http" ? "ds=\"nocloud-net;seedfrom=http://{{.HTTPIP}}:{{.HTTPPort}}/\"" : "ds=\"nocloud\""
+  vm_hostname         = "TEMP-UBNT-${local.build_version}"
   vm_name             = "${var.vm_guest_os_name_prefix}-${var.vm_guest_os_family}-${var.vm_guest_os_name}-${var.vm_guest_os_version}-v${local.build_version}"
 }
 
@@ -66,7 +69,6 @@ source "vsphere-iso" "template-ubuntu2204" {
   notes                = local.build_description
 
   // Removable Shmedia
-  iso_url      = var.iso_url
   iso_paths    = local.iso_paths
   iso_checksum = local.iso_checksum
   http_content = var.common_data_source == "http" ? local.data_source_content : null
